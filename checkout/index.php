@@ -1,5 +1,23 @@
 <?php
-// Get URL parameters
+// Parse URL path for WooCommerce plugin format: /checkout/RESOURCE/TOTAL_CENTS/ORDER_ID/HASH
+$request_uri = $_SERVER['REQUEST_URI'] ?? '';
+$path_parts = explode('?', $request_uri)[0]; // Remove query string
+$segments = explode('/', trim($path_parts, '/'));
+
+// Extract path parameters if present
+$resource = null;
+$total_cents = null;
+$path_order_id = null;
+$hash = null;
+
+if (count($segments) >= 5 && $segments[0] === 'checkout') {
+    $resource = $segments[1] ?? null;
+    $total_cents = $segments[2] ?? null;
+    $path_order_id = $segments[3] ?? null;
+    $hash = $segments[4] ?? null;
+}
+
+// Get URL parameters (GET params override path params)
 $params = [
     'first_name' => $_GET['first_name'] ?? '',
     'last_name' => $_GET['last_name'] ?? '',
@@ -10,12 +28,14 @@ $params = [
     'zip' => $_GET['zip'] ?? '',
     'email' => $_GET['email'] ?? '',
     'phone' => $_GET['phone'] ?? '',
-    'total' => $_GET['total'] ?? '0',
-    'order_id' => $_GET['id'] ?? '',
-    'item_name' => $_GET['item_name'] ?? 'Order',
+    'total' => $_GET['total'] ?? $total_cents ?? '0',
+    'order_id' => $_GET['id'] ?? $path_order_id ?? '',
+    'item_name' => $_GET['item_name'] ?? 'Order #' . ($path_order_id ?? ''),
     'success' => $_GET['success'] ?? '',
     'failure' => $_GET['failure'] ?? '',
-    'back' => $_GET['back'] ?? '#'
+    'back' => $_GET['back'] ?? '#',
+    'resource' => $resource,
+    'hash' => $hash
 ];
 
 $total = floatval($params['total']) / 100;
@@ -106,18 +126,6 @@ $total = floatval($params['total']) / 100;
 
         .total-row td {
             border-bottom: none;
-        }
-
-        .security-badge {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .security-badge img {
-            height: 40px;
         }
 
         .form-grid {
@@ -345,10 +353,6 @@ $total = floatval($params['total']) / 100;
                     </tr>
                 </tfoot>
             </table>
-        </div>
-
-        <div class="security-badge">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='40' viewBox='0 0 100 40'%3E%3Crect fill='%234CAF50' width='100' height='40' rx='5'/%3E%3Ctext x='50' y='25' font-family='Arial' font-size='12' fill='white' text-anchor='middle' font-weight='bold'%3EHACKER FREE SITE%3C/text%3E%3C/svg%3E" alt="Hacker Free Site">
         </div>
 
         <form id="checkout-form" method="POST" action="/checkedout">
