@@ -129,6 +129,36 @@ $params = [
     'store_id' => $_GET['store_id'] ?? ''
 ];
 
+// Security: Block access to checkout page without required parameters
+// This prevents bots and direct access - only allow access via WooCommerce plugin
+$required_params = ['order_id', 'total', 'email'];
+$has_required = false;
+
+foreach ($required_params as $param) {
+    if (!empty($params[$param])) {
+        $has_required = true;
+        break;
+    }
+}
+
+if (!$has_required) {
+    http_response_code(404);
+    die('<!DOCTYPE html>
+<html>
+<head>
+    <title>404 Not Found</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>404 - Page Not Found</h1>
+    <p>The page you are looking for does not exist.</p>
+</body>
+</html>');
+}
+
 $total = floatval($params['total']) / 100;
 ?>
 <!DOCTYPE html>
@@ -136,6 +166,8 @@ $total = floatval($params['total']) / 100;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="../images/encrypted.png">
     <title>Secure Checkout Page</title>
     <style>

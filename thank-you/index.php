@@ -1,12 +1,33 @@
 <?php
-$orderId = $_GET['order_id'] ?? 'N/A';
-$successUrl = $_GET['success'] ?? '/';
+$orderId = $_GET['order_id'] ?? '';
+$successUrl = $_GET['success'] ?? '';
+
+// Security: Block direct access without parameters
+if (empty($orderId) || empty($successUrl)) {
+    http_response_code(404);
+    die('<!DOCTYPE html>
+<html>
+<head>
+    <title>404 Not Found</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>404 - Page Not Found</h1>
+    <p>The page you are looking for does not exist.</p>
+</body>
+</html>');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow">
     <title>Thank You - Order Confirmation</title>
     <style>
         * {
