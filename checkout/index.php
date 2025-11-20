@@ -355,7 +355,7 @@ $total = floatval($params['total']) / 100;
             </table>
         </div>
 
-        <form id="checkout-form" method="POST" action="/checkedout">
+        <form id="checkout-form" method="POST" action="/process-payment.php">
             <div class="form-grid">
                 <div class="form-section">
                     <h2>Billing Address</h2>
