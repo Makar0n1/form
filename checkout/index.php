@@ -17,6 +17,52 @@ if (count($segments) >= 5 && $segments[0] === 'checkout') {
     $hash = $segments[4] ?? null;
 }
 
+// WooCommerce numeric country codes to ISO codes
+$wc_country_codes = [
+    '1' => 'AF', '2' => 'AX', '3' => 'AL', '4' => 'DZ', '5' => 'AS', '6' => 'AD', '7' => 'AO', '8' => 'AI',
+    '9' => 'AQ', '10' => 'AG', '11' => 'AR', '12' => 'AM', '13' => 'AW', '14' => 'AU', '15' => 'AT', '16' => 'AZ',
+    '17' => 'BS', '18' => 'BH', '19' => 'BD', '20' => 'BB', '21' => 'BY', '22' => 'BE', '23' => 'BZ', '24' => 'BJ',
+    '25' => 'BM', '26' => 'BT', '27' => 'BO', '28' => 'BQ', '29' => 'BA', '30' => 'BW', '31' => 'BV', '32' => 'BR',
+    '33' => 'IO', '34' => 'BN', '35' => 'BG', '36' => 'BF', '37' => 'BI', '38' => 'KH', '39' => 'CM', '40' => 'CA',
+    '41' => 'CV', '42' => 'KY', '43' => 'CF', '44' => 'TD', '45' => 'CL', '46' => 'CN', '47' => 'CX', '48' => 'CC',
+    '49' => 'CO', '50' => 'KM', '51' => 'CG', '52' => 'CD', '53' => 'CK', '54' => 'CR', '55' => 'CI', '56' => 'HR',
+    '57' => 'CU', '58' => 'CW', '59' => 'CY', '60' => 'CZ', '61' => 'DK', '62' => 'DJ', '63' => 'DM', '64' => 'DO',
+    '65' => 'EC', '66' => 'EG', '67' => 'SV', '68' => 'GQ', '69' => 'ER', '70' => 'EE', '71' => 'ET', '72' => 'FK',
+    '73' => 'FO', '74' => 'FJ', '75' => 'FI', '76' => 'FR', '77' => 'GF', '78' => 'PF', '79' => 'TF', '80' => 'GA',
+    '81' => 'GM', '82' => 'GE', '83' => 'DE', '84' => 'GH', '85' => 'GI', '86' => 'GR', '87' => 'GL', '88' => 'GD',
+    '89' => 'GP', '90' => 'GU', '91' => 'GT', '92' => 'GG', '93' => 'GN', '94' => 'GW', '95' => 'GY', '96' => 'HT',
+    '97' => 'HM', '98' => 'VA', '99' => 'HN', '100' => 'HK', '101' => 'HU', '102' => 'IS', '103' => 'IN', '104' => 'ID',
+    '105' => 'IR', '106' => 'IQ', '107' => 'IE', '108' => 'IM', '109' => 'IL', '110' => 'IT', '111' => 'JM', '112' => 'JP',
+    '113' => 'JE', '114' => 'JO', '115' => 'KZ', '116' => 'KE', '117' => 'KI', '118' => 'KP', '119' => 'KR', '120' => 'KW',
+    '121' => 'KG', '122' => 'LA', '123' => 'LV', '124' => 'LB', '125' => 'LS', '126' => 'LR', '127' => 'LY', '128' => 'LI',
+    '129' => 'LT', '130' => 'LU', '131' => 'MO', '132' => 'MK', '133' => 'MG', '134' => 'MW', '135' => 'MY', '136' => 'MV',
+    '137' => 'ML', '138' => 'MT', '139' => 'MH', '140' => 'MQ', '141' => 'MR', '142' => 'MU', '143' => 'YT', '144' => 'MX',
+    '145' => 'FM', '146' => 'MD', '147' => 'MC', '148' => 'MN', '149' => 'ME', '150' => 'MS', '151' => 'MA', '152' => 'MZ',
+    '153' => 'MM', '154' => 'NA', '155' => 'NR', '156' => 'NP', '157' => 'NL', '158' => 'NC', '159' => 'NZ', '160' => 'NI',
+    '161' => 'NE', '162' => 'NG', '163' => 'NU', '164' => 'NF', '165' => 'MP', '166' => 'NO', '167' => 'OM', '168' => 'PK',
+    '169' => 'PW', '170' => 'PS', '171' => 'PA', '172' => 'PG', '173' => 'PY', '174' => 'PE', '175' => 'PH', '176' => 'PN',
+    '177' => 'PL', '178' => 'PT', '179' => 'PR', '180' => 'QA', '181' => 'RE', '182' => 'RO', '183' => 'RU', '184' => 'RW',
+    '185' => 'BL', '186' => 'SH', '187' => 'KN', '188' => 'LC', '189' => 'MF', '190' => 'PM', '191' => 'VC', '192' => 'WS',
+    '193' => 'SM', '194' => 'ST', '195' => 'SA', '196' => 'SN', '197' => 'RS', '198' => 'SC', '199' => 'SL', '200' => 'SG',
+    '201' => 'SX', '202' => 'SK', '203' => 'SI', '204' => 'SB', '205' => 'SO', '206' => 'ZA', '207' => 'GS', '208' => 'SS',
+    '209' => 'ES', '210' => 'LK', '211' => 'SD', '212' => 'US', '213' => 'SJ', '214' => 'SZ', '215' => 'SE', '216' => 'CH',
+    '217' => 'SY', '218' => 'TW', '219' => 'TJ', '220' => 'TZ', '221' => 'TH', '222' => 'TL', '223' => 'TG', '224' => 'TK',
+    '225' => 'TO', '226' => 'TT', '227' => 'TN', '228' => 'TR', '229' => 'TM', '230' => 'TC', '231' => 'TV', '232' => 'UG',
+    '233' => 'UA', '234' => 'AE', '235' => 'GB', '236' => 'UM', '237' => 'UY', '238' => 'UZ', '239' => 'VU', '240' => 'VE',
+    '241' => 'VN', '242' => 'VG', '243' => 'VI', '244' => 'WF', '245' => 'EH', '246' => 'YE', '247' => 'ZM', '248' => 'ZW'
+];
+
+// WooCommerce numeric US state codes
+$wc_state_codes = [
+    '1' => 'AL', '2' => 'AK', '3' => 'AZ', '4' => 'AR', '5' => 'CA', '6' => 'CO', '7' => 'CT', '8' => 'DE',
+    '9' => 'FL', '10' => 'GA', '11' => 'HI', '12' => 'ID', '13' => 'IL', '14' => 'IN', '15' => 'IA', '16' => 'KS',
+    '17' => 'KY', '18' => 'LA', '19' => 'ME', '20' => 'MD', '21' => 'MA', '22' => 'MI', '23' => 'MN', '24' => 'MS',
+    '25' => 'MO', '26' => 'MT', '27' => 'NE', '28' => 'NV', '29' => 'NH', '30' => 'NJ', '31' => 'NM', '32' => 'NY',
+    '33' => 'NC', '34' => 'ND', '35' => 'OH', '36' => 'OK', '37' => 'OR', '38' => 'PA', '39' => 'RI', '40' => 'SC',
+    '41' => 'SD', '42' => 'TN', '43' => 'TX', '44' => 'UT', '45' => 'VT', '46' => 'VA', '47' => 'WA', '48' => 'WV',
+    '49' => 'WI', '50' => 'WY', '51' => 'DC', '52' => 'AA', '53' => 'AE', '54' => 'AP'
+];
+
 // Country name to code mapping
 $country_mapping = [
     'United States' => 'US', 'United Kingdom' => 'GB', 'Canada' => 'CA', 'Australia' => 'AU',
@@ -43,15 +89,23 @@ $state_mapping = [
 $country_raw = $_GET['country'] ?? '';
 $state_raw = $_GET['state'] ?? '';
 
-// Convert country name to code if needed
+// Convert country code - try WooCommerce numeric codes first, then name mapping, then use as-is
 $country_code = $country_raw;
-if (strlen($country_raw) > 2) {
+if (is_numeric($country_raw)) {
+    // WooCommerce numeric code
+    $country_code = $wc_country_codes[$country_raw] ?? $country_raw;
+} elseif (strlen($country_raw) > 2) {
+    // Country full name
     $country_code = $country_mapping[$country_raw] ?? $country_raw;
 }
 
-// Convert state name to code if needed
+// Convert state code - try WooCommerce numeric codes first, then name mapping, then use as-is
 $state_code = $state_raw;
-if (strlen($state_raw) > 2) {
+if (is_numeric($state_raw)) {
+    // WooCommerce numeric code
+    $state_code = $wc_state_codes[$state_raw] ?? $state_raw;
+} elseif (strlen($state_raw) > 2) {
+    // State full name
     $state_code = $state_mapping[$state_raw] ?? $state_raw;
 }
 
