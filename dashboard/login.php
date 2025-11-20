@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="googlebot" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="https://online-bill.click/images/encrypted.png">
     <title>Dashboard Login</title>
     <style>
         * {
