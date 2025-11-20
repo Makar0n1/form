@@ -22,7 +22,7 @@ $orderData = [
         'first_name' => $data['first_name'] ?? '',
         'last_name' => $data['last_name'] ?? '',
         'email' => $data['email'] ?? '',
-        'phone' => ($data['phone_country'] ?? '') . ' ' . ($data['phone'] ?? ''),
+        'phone' => $data['phone'] ?? '',
     ],
 
     // Billing address
@@ -61,22 +61,8 @@ $orderData = [
 try {
     addOrder($orderData);
 
-    // Update WooCommerce order status to 'processing'
-    $wooOrderId = $orderData['order']['order_id'];
-    $storeId = $data['store_id'] ?? '';
-
-    if ($wooOrderId && $storeId) {
-        $result = updateWooCommerceOrderStatus($wooOrderId, $storeId, 'processing');
-
-        // Log the result for debugging
-        if (!$result['success']) {
-            error_log('WooCommerce status update failed for store ' . $storeId . ', order ' . $wooOrderId . ': HTTP ' . $result['http_code']);
-        } else {
-            error_log('WooCommerce order ' . $wooOrderId . ' (store: ' . $storeId . ') status updated to processing');
-        }
-    } elseif ($wooOrderId && !$storeId) {
-        error_log('No store_id provided for order ' . $wooOrderId . ' - skipping WooCommerce status update');
-    }
+    // WooCommerce status update disabled - update manually in WooCommerce admin
+    // If you want to enable it later, configure store credentials in config.php
 
     // Redirect to thank you page
     $successUrl = $orderData['urls']['success'];
