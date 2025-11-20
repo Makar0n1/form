@@ -277,9 +277,16 @@ $total = floatval($params['total']) / 100;
 
         .payment-logos {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: center;
             margin-bottom: 15px;
+        }
+
+        .card-icon {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
         }
 
         .payment-logo {
@@ -622,8 +629,8 @@ $total = floatval($params['total']) / 100;
                     <h2>Payment Information</h2>
 
                     <div class="payment-logos">
-                        <div class="payment-logo visa">VISA</div>
-                        <div class="payment-logo mastercard">MC</div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" class="card-icon" alt="Visa">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="card-icon" alt="Mastercard">
                     </div>
 
                     <div class="form-group">
