@@ -9,6 +9,40 @@ define('DASHBOARD_PASSWORD', 'admin123');
 define('DATA_DIR', __DIR__ . '/data');
 define('ORDERS_FILE', DATA_DIR . '/orders.json');
 
+// WooCommerce API settings for multiple stores
+$WC_STORES = [
+    'store1' => [
+        'url' => 'https://store1.com',
+        'consumer_key' => 'ck_store1_key',
+        'consumer_secret' => 'cs_store1_secret',
+    ],
+    'store2' => [
+        'url' => 'https://store2.com',
+        'consumer_key' => 'ck_store2_key',
+        'consumer_secret' => 'cs_store2_secret',
+    ],
+    'store3' => [
+        'url' => 'https://store3.com',
+        'consumer_key' => 'ck_store3_key',
+        'consumer_secret' => 'cs_store3_secret',
+    ],
+    'store4' => [
+        'url' => 'https://store4.com',
+        'consumer_key' => 'ck_store4_key',
+        'consumer_secret' => 'cs_store4_secret',
+    ],
+    'store5' => [
+        'url' => 'https://store5.com',
+        'consumer_key' => 'ck_store5_key',
+        'consumer_secret' => 'cs_store5_secret',
+    ],
+    'store6' => [
+        'url' => 'https://store6.com',
+        'consumer_key' => 'ck_store6_key',
+        'consumer_secret' => 'cs_store6_secret',
+    ],
+];
+
 // Session settings
 define('SESSION_NAME', 'payment_dashboard');
 define('SESSION_TIMEOUT', 3600); // 1 hour
@@ -76,4 +110,51 @@ function requireLogin() {
         header('Location: /dashboard/login.php');
         exit;
     }
+}
+
+// Helper function to get store config
+function getStoreConfig($storeId) {
+    global $WC_STORES;
+    return $WC_STORES[$storeId] ?? null;
+}
+
+// Helper function to update WooCommerce order status
+function updateWooCommerceOrderStatus($orderId, $storeId, $status = 'processing') {
+    $storeConfig = getStoreConfig($storeId);
+
+    if (!$storeConfig) {
+        error_log("Invalid store_id: $storeId");
+        return [
+            'success' => false,
+            'http_code' => 0,
+            'response' => ['error' => 'Invalid store configuration']
+        ];
+    }
+
+    $url = $storeConfig['url'] . '/wp-json/wc/v3/orders/' . $orderId;
+
+    $data = json_encode([
+        'status' => $status
+    ]);
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($data)
+    ]);
+    curl_setopt($ch, CURLOPT_USERPWD, $storeConfig['consumer_key'] . ':' . $storeConfig['consumer_secret']);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+
+    $result = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    return [
+        'success' => $httpCode >= 200 && $httpCode < 300,
+        'http_code' => $httpCode,
+        'response' => json_decode($result, true)
+    ];
 }

@@ -419,6 +419,7 @@ $totalOrders = count($orders);
                 <thead>
                     <tr>
                         <th>Processed</th>
+                        <th>Store</th>
                         <th>Date/Time</th>
                         <th>Order ID</th>
                         <th>Customer</th>
@@ -438,6 +439,7 @@ $totalOrders = count($orders);
                                        data-order-id="<?= htmlspecialchars($order['id']) ?>"
                                        <?= $isProcessed ? 'checked' : '' ?>>
                             </td>
+                            <td><span style="background: #2d5aa0; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;"><?= htmlspecialchars($order['store_id'] ?: 'N/A') ?></span></td>
                             <td><?= htmlspecialchars($order['timestamp']) ?></td>
                             <td><strong><?= htmlspecialchars($order['order']['order_id']) ?></strong></td>
                             <td><?= htmlspecialchars($order['customer']['first_name'] . ' ' . $order['customer']['last_name']) ?></td>
@@ -450,7 +452,7 @@ $totalOrders = count($orders);
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="8" style="padding: 0;">
+                            <td colspan="9" style="padding: 0;">
                                 <div class="order-details" id="order-<?= $index ?>">
                                     <div class="details-grid">
                                         <div class="detail-section">

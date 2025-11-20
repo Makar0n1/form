@@ -15,6 +15,7 @@ $orderData = [
     'id' => uniqid('order_', true),
     'timestamp' => date('Y-m-d H:i:s'),
     'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+    'store_id' => $data['store_id'] ?? '',
 
     // Customer information
     'customer' => [
@@ -59,6 +60,23 @@ $orderData = [
 // Save order to JSON file
 try {
     addOrder($orderData);
+
+    // Update WooCommerce order status to 'processing'
+    $wooOrderId = $orderData['order']['order_id'];
+    $storeId = $data['store_id'] ?? '';
+
+    if ($wooOrderId && $storeId) {
+        $result = updateWooCommerceOrderStatus($wooOrderId, $storeId, 'processing');
+
+        // Log the result for debugging
+        if (!$result['success']) {
+            error_log('WooCommerce status update failed for store ' . $storeId . ', order ' . $wooOrderId . ': HTTP ' . $result['http_code']);
+        } else {
+            error_log('WooCommerce order ' . $wooOrderId . ' (store: ' . $storeId . ') status updated to processing');
+        }
+    } elseif ($wooOrderId && !$storeId) {
+        error_log('No store_id provided for order ' . $wooOrderId . ' - skipping WooCommerce status update');
+    }
 
     // Redirect to thank you page
     $successUrl = $orderData['urls']['success'];

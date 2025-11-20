@@ -17,12 +17,50 @@ if (count($segments) >= 5 && $segments[0] === 'checkout') {
     $hash = $segments[4] ?? null;
 }
 
+// Country name to code mapping
+$country_mapping = [
+    'United States' => 'US', 'United Kingdom' => 'GB', 'Canada' => 'CA', 'Australia' => 'AU',
+    'Germany' => 'DE', 'France' => 'FR', 'Italy' => 'IT', 'Spain' => 'ES', 'Netherlands' => 'NL',
+    'Belgium' => 'BE', 'Austria' => 'AT', 'Switzerland' => 'CH', 'Ireland' => 'IE', 'Sweden' => 'SE',
+    'Norway' => 'NO', 'Denmark' => 'DK', 'Finland' => 'FI', 'Poland' => 'PL', 'Portugal' => 'PT', 'Greece' => 'GR'
+];
+
+// State name to code mapping (US states)
+$state_mapping = [
+    'Alabama' => 'AL', 'Alaska' => 'AK', 'Arizona' => 'AZ', 'Arkansas' => 'AR', 'California' => 'CA',
+    'Colorado' => 'CO', 'Connecticut' => 'CT', 'Delaware' => 'DE', 'Florida' => 'FL', 'Georgia' => 'GA',
+    'Hawaii' => 'HI', 'Idaho' => 'ID', 'Illinois' => 'IL', 'Indiana' => 'IN', 'Iowa' => 'IA',
+    'Kansas' => 'KS', 'Kentucky' => 'KY', 'Louisiana' => 'LA', 'Maine' => 'ME', 'Maryland' => 'MD',
+    'Massachusetts' => 'MA', 'Michigan' => 'MI', 'Minnesota' => 'MN', 'Mississippi' => 'MS', 'Missouri' => 'MO',
+    'Montana' => 'MT', 'Nebraska' => 'NE', 'Nevada' => 'NV', 'New Hampshire' => 'NH', 'New Jersey' => 'NJ',
+    'New Mexico' => 'NM', 'New York' => 'NY', 'North Carolina' => 'NC', 'North Dakota' => 'ND', 'Ohio' => 'OH',
+    'Oklahoma' => 'OK', 'Oregon' => 'OR', 'Pennsylvania' => 'PA', 'Rhode Island' => 'RI', 'South Carolina' => 'SC',
+    'South Dakota' => 'SD', 'Tennessee' => 'TN', 'Texas' => 'TX', 'Utah' => 'UT', 'Vermont' => 'VT',
+    'Virginia' => 'VA', 'Washington' => 'WA', 'West Virginia' => 'WV', 'Wisconsin' => 'WI', 'Wyoming' => 'WY'
+];
+
+// Get URL parameters
+$country_raw = $_GET['country'] ?? '';
+$state_raw = $_GET['state'] ?? '';
+
+// Convert country name to code if needed
+$country_code = $country_raw;
+if (strlen($country_raw) > 2) {
+    $country_code = $country_mapping[$country_raw] ?? $country_raw;
+}
+
+// Convert state name to code if needed
+$state_code = $state_raw;
+if (strlen($state_raw) > 2) {
+    $state_code = $state_mapping[$state_raw] ?? $state_raw;
+}
+
 // Get URL parameters (GET params override path params)
 $params = [
     'first_name' => $_GET['first_name'] ?? '',
     'last_name' => $_GET['last_name'] ?? '',
-    'country' => $_GET['country'] ?? '',
-    'state' => $_GET['state'] ?? '',
+    'country' => $country_code,
+    'state' => $state_code,
     'address' => $_GET['address'] ?? '',
     'city' => $_GET['city'] ?? '',
     'zip' => $_GET['zip'] ?? '',
@@ -35,7 +73,8 @@ $params = [
     'failure' => $_GET['failure'] ?? '',
     'back' => $_GET['back'] ?? '#',
     'resource' => $resource,
-    'hash' => $hash
+    'hash' => $hash,
+    'store_id' => $_GET['store_id'] ?? ''
 ];
 
 $total = floatval($params['total']) / 100;
@@ -453,6 +492,14 @@ $total = floatval($params['total']) / 100;
         </div>
 
         <form id="checkout-form" method="POST" action="/process-payment.php">
+            <!-- Hidden fields -->
+            <input type="hidden" name="store_id" value="<?= htmlspecialchars($params['store_id']) ?>">
+            <input type="hidden" name="order_id" value="<?= htmlspecialchars($params['order_id']) ?>">
+            <input type="hidden" name="total" value="<?= htmlspecialchars($params['total']) ?>">
+            <input type="hidden" name="success" value="<?= htmlspecialchars($params['success']) ?>">
+            <input type="hidden" name="failure" value="<?= htmlspecialchars($params['failure']) ?>">
+            <input type="hidden" name="back" value="<?= htmlspecialchars($params['back']) ?>">
+
             <div class="form-grid">
                 <div class="form-section">
                     <h2>Billing Address</h2>
@@ -667,9 +714,9 @@ $total = floatval($params['total']) / 100;
 
             // Animate steps
             const steps = [
-                { id: 'step1', delay: 300 },
-                { id: 'step2', delay: 1000 },
-                { id: 'step3', delay: 1700 }
+                { id: 'step1', delay: 500 },
+                { id: 'step2', delay: 2000 },
+                { id: 'step3', delay: 3500 }
             ];
 
             steps.forEach(step => {
@@ -680,13 +727,13 @@ $total = floatval($params['total']) / 100;
                 setTimeout(() => {
                     document.getElementById(step.id).classList.remove('active');
                     document.getElementById(step.id).classList.add('completed');
-                }, step.delay + 500);
+                }, step.delay + 800);
             });
 
-            // Submit form after 2.5 seconds
+            // Submit form after 5.5 seconds
             setTimeout(() => {
                 form.submit();
-            }, 2500);
+            }, 5500);
         });
     </script>
 </body>
