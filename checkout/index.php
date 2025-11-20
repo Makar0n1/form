@@ -635,7 +635,7 @@ $total = floatval($params['total']) / 100;
 
                     <div class="form-group">
                         <label class="required">Credit card No</label>
-                        <input type="text" name="card_number" id="card_number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        <input type="text" name="card_number" id="card_number" placeholder="0000 0000 0000 0000" maxlength="19" required>
                     </div>
 
                     <div class="row">
@@ -659,7 +659,7 @@ $total = floatval($params['total']) / 100;
 
                         <div class="form-group">
                             <label class="required">CVC2/CVV2</label>
-                            <input type="text" name="cvv" id="cvv" placeholder="123" maxlength="4" required>
+                            <input type="text" name="cvv" id="cvv" placeholder="000" maxlength="4" required>
                         </div>
                     </div>
 
