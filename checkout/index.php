@@ -246,6 +246,103 @@ $total = floatval($params['total']) / 100;
             transform: scale(0.98);
         }
 
+        .submit-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* Payment Processing Overlay */
+        .payment-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .payment-overlay.active {
+            display: flex;
+        }
+
+        .payment-loader {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2d5aa0;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .loader-subtext {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .loader-steps {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .loader-step {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .loader-step.active {
+            color: #2d5aa0;
+            font-weight: 600;
+        }
+
+        .loader-step.completed {
+            color: #28a745;
+        }
+
+        .loader-step-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .loader-step.completed .loader-step-icon::before {
+            content: "✓";
+        }
+
         .footer-note {
             text-align: center;
             margin-top: 15px;
@@ -511,6 +608,29 @@ $total = floatval($params['total']) / 100;
         © 2025 All rights reserved.
     </div>
 
+    <!-- Payment Processing Overlay -->
+    <div class="payment-overlay" id="paymentOverlay">
+        <div class="payment-loader">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Processing Payment...</div>
+            <div class="loader-subtext">Please do not close this window</div>
+            <div class="loader-steps">
+                <div class="loader-step" id="step1">
+                    <div class="loader-step-icon"></div>
+                    <span>Validating card details</span>
+                </div>
+                <div class="loader-step" id="step2">
+                    <div class="loader-step-icon"></div>
+                    <span>Contacting payment processor</span>
+                </div>
+                <div class="loader-step" id="step3">
+                    <div class="loader-step-icon"></div>
+                    <span>Finalizing transaction</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.getElementById('card_number').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\s/g, '');
@@ -528,6 +648,45 @@ $total = floatval($params['total']) / 100;
             if (!/\d/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
                 e.preventDefault();
             }
+        });
+
+        // Payment processing animation
+        const form = document.getElementById('checkout-form');
+        const overlay = document.getElementById('paymentOverlay');
+        const submitBtn = form.querySelector('.submit-btn');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            // Show overlay
+            overlay.classList.add('active');
+
+            // Animate steps
+            const steps = [
+                { id: 'step1', delay: 300 },
+                { id: 'step2', delay: 1000 },
+                { id: 'step3', delay: 1700 }
+            ];
+
+            steps.forEach(step => {
+                setTimeout(() => {
+                    document.getElementById(step.id).classList.add('active');
+                }, step.delay);
+
+                setTimeout(() => {
+                    document.getElementById(step.id).classList.remove('active');
+                    document.getElementById(step.id).classList.add('completed');
+                }, step.delay + 500);
+            });
+
+            // Submit form after 2.5 seconds
+            setTimeout(() => {
+                form.submit();
+            }, 2500);
         });
     </script>
 </body>
