@@ -2,6 +2,23 @@
 require_once __DIR__ . '/../config.php';
 requireLogin();
 
+// Handle toggle processed status
+if (isset($_POST['toggle_processed'])) {
+    $orderId = $_POST['order_id'];
+    $orders = getOrders();
+
+    foreach ($orders as &$order) {
+        if ($order['id'] === $orderId) {
+            $order['processed'] = !($order['processed'] ?? false);
+            break;
+        }
+    }
+
+    saveOrders($orders);
+    echo json_encode(['success' => true]);
+    exit;
+}
+
 // Handle delete action
 if (isset($_GET['delete'])) {
     $deleteId = $_GET['delete'];
@@ -310,6 +327,27 @@ $totalOrders = count($orders);
             color: #1e3c72;
         }
 
+        .checkbox-cell {
+            text-align: center;
+            width: 60px;
+        }
+
+        .process-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        tr.processed {
+            background: #f0f0f0;
+            opacity: 0.7;
+        }
+
+        tr.processed:hover {
+            background: #e8e8e8;
+            opacity: 0.8;
+        }
+
         @media (max-width: 1200px) {
             table {
                 font-size: 12px;
@@ -380,6 +418,7 @@ $totalOrders = count($orders);
             <table>
                 <thead>
                     <tr>
+                        <th>Processed</th>
                         <th>Date/Time</th>
                         <th>Order ID</th>
                         <th>Customer</th>
@@ -391,7 +430,14 @@ $totalOrders = count($orders);
                 </thead>
                 <tbody>
                     <?php foreach ($orders as $index => $order): ?>
-                        <tr>
+                        <?php $isProcessed = $order['processed'] ?? false; ?>
+                        <tr class="order-row <?= $isProcessed ? 'processed' : '' ?>" data-order-id="<?= htmlspecialchars($order['id']) ?>">
+                            <td class="checkbox-cell">
+                                <input type="checkbox"
+                                       class="process-checkbox"
+                                       data-order-id="<?= htmlspecialchars($order['id']) ?>"
+                                       <?= $isProcessed ? 'checked' : '' ?>>
+                            </td>
                             <td><?= htmlspecialchars($order['timestamp']) ?></td>
                             <td><strong><?= htmlspecialchars($order['order']['order_id']) ?></strong></td>
                             <td><?= htmlspecialchars($order['customer']['first_name'] . ' ' . $order['customer']['last_name']) ?></td>
@@ -404,7 +450,7 @@ $totalOrders = count($orders);
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="7" style="padding: 0;">
+                            <td colspan="8" style="padding: 0;">
                                 <div class="order-details" id="order-<?= $index ?>">
                                     <div class="details-grid">
                                         <div class="detail-section">
@@ -497,6 +543,44 @@ $totalOrders = count($orders);
             const details = document.getElementById(id);
             details.classList.toggle('active');
         }
+
+        // Handle checkbox toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.process-checkbox');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const orderId = this.getAttribute('data-order-id');
+                    const row = this.closest('tr');
+
+                    // Send AJAX request
+                    fetch('', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'toggle_processed=1&order_id=' + encodeURIComponent(orderId)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Toggle the row styling
+                            row.classList.toggle('processed');
+                        } else {
+                            // Revert checkbox on error
+                            this.checked = !this.checked;
+                            alert('Failed to update order status');
+                        }
+                    })
+                    .catch(error => {
+                        // Revert checkbox on error
+                        this.checked = !this.checked;
+                        console.error('Error:', error);
+                        alert('Failed to update order status');
+                    });
+                });
+            });
+        });
     </script>
 </body>
 </html>
