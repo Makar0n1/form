@@ -136,6 +136,7 @@ $total = floatval($params['total']) / 100;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../images/encrypted.png">
     <title>Secure Checkout Page</title>
     <style>
         * {
@@ -280,6 +281,10 @@ $total = floatval($params['total']) / 100;
             gap: 15px;
             align-items: center;
             margin-bottom: 15px;
+        }
+        .security-logos {
+            margin-top: 15px;
+            justify-content: center;
         }
 
         .card-icon {
@@ -631,6 +636,8 @@ $total = floatval($params['total']) / 100;
                     <div class="payment-logos">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" class="card-icon" alt="Visa">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="card-icon" alt="Mastercard">
+                        <img src="https://logo.svgcdn.com/logos/amex.svg" class="card-icon" alt="American Express">
+
                     </div>
 
                     <div class="form-group">
@@ -674,8 +681,13 @@ $total = floatval($params['total']) / 100;
                     <input type="hidden" name="back" value="<?= htmlspecialchars($params['back']) ?>">
 
                     <button type="submit" class="submit-btn">Pay Now</button>
+                    <div class="payment-logos security-logos"> 
+                        <img src="../images/norton.png" class="card-icon" alt="Norton Secured">
+                        <img src="../images/pci-dss.png" class="card-icon" alt="PCI DSS Compliant">
+                    </div>
                 </div>
             </div>
+            
         </form>
 
         <div class="back-link">
